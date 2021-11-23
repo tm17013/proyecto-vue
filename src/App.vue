@@ -1,28 +1,174 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <v-app>
+    <v-app-bar
+      app
+      color="yellow"
+      class="
+        d-sm-none
+        d-md-flex
+        d-none
+        d-md-flex
+        d-lg-none
+        d-none
+        d-lg-flex
+        d-xl-none
+      "
+      dark
+    >
+      <v-container>
+        <v-row>
+          <v-col class="d-flex align-center">
+            <v-app-bar-nav-icon></v-app-bar-nav-icon>
+            <v-toolbar-title>Tienda Celular</v-toolbar-title>
+          </v-col>
+          <v-col md="3" class="d-flex align-center">
+            <v-text-field
+              clearable
+              flat
+              solo-inverted
+              hide-details
+              prepend-inner-icon="mdi-magnify"
+              label="Search"
+            ></v-text-field>
+          </v-col>
+          <v-col
+            ><v-btn
+              style="font-size: 10px"
+              class="ma-1"
+              small
+              outlined
+              color="indigo"
+              :to="{ path: '/' }"
+              >Inicio</v-btn
+            ></v-col
+          >
+          <v-col
+            ><v-btn
+              style="font-size: 10px"
+              class="ma-1"
+              small
+              outlined
+              color="indigo"
+              >Estadisticas</v-btn
+            ></v-col
+          >
+          <v-col>
+            <!--<v-btn :to= "{path: '/NuevoAnuncio'}" class="mx-1" fab dark small color="purple">
+                <v-icon dark small>mdi-plus</v-icon>
+              </v-btn>-->
+            <NuevoAnuncio />
+          </v-col>
+          <v-col>
+            <v-btn class="mx-1" fab dark small color="purple">
+              <v-icon dark small>mdi-cart-plus</v-icon>
+              <span class="mr-1">0</span>
+            </v-btn>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-app-bar>
+
+    <v-app-bar
+      app
+      color="yellow"
+      dark
+      class="d-flex d-sm-none d-none d-sm-flex d-md-none"
+    >
+      <v-container>
+        <v-row>
+          <v-col class="d-flex align-center">
+            <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
+          </v-col>
+          <v-col cols="8">
+            <v-text-field
+              clearable
+              flat
+              solo-inverted
+              hide-details
+              prepend-inner-icon="mdi-magnify"
+              label="Search"
+            ></v-text-field>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-app-bar>
+
+    <v-navigation-drawer v-model="drawer" absolute temporary>
+      <v-list nav dense>
+        <v-list-item-group active-class="deep-purple--text text--accent-4">
+          <v-list-item>
+            <v-list-item-icon>
+              <v-icon>mdi-card-account-phone</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>Tienda Celulares</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+
+          <v-list-item>
+            <v-list-item-icon>
+              <v-btn
+                class="ma-1"
+                :to="{ path: '/' }"
+                small
+                outlined
+                block
+                color="indigo"
+                >Inicio</v-btn
+              >
+            </v-list-item-icon>
+          </v-list-item>
+
+          <v-list-item>
+            <v-list-item-icon>
+              <!--<v-btn :to= "{path: '/NuevoAnuncio'}" class="mx-1" fab dark small color="purple">
+                <v-icon dark small>mdi-plus</v-icon>
+              </v-btn>-->
+              <NuevoAnuncio />
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>Nuevo Anuncio</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+
+          <v-list-item>
+            <v-list-item-icon
+              class="d-flex justify-center"
+              style="align-items: center"
+            >
+              <v-icon style="color: purple">mdi-cart-plus</v-icon>
+              <span class="mr-1" style="margin-left: 1px; color: grey">0</span>
+            </v-list-item-icon>
+          </v-list-item>
+
+          <v-list-item>
+            <v-list-item-icon>
+              <v-btn class="ma-1" small block outlined color="indigo"
+                >Estadisticas</v-btn
+              >
+            </v-list-item-icon>
+          </v-list-item>
+        </v-list-item-group>
+      </v-list>
+    </v-navigation-drawer>
+
+    <v-main>
+      <router-view />
+    </v-main>
+  </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import NuevoAnuncio from "./components/NuevoAnuncio.vue";
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld
-  }
-}
+    NuevoAnuncio,
+  },
+  data: () => ({
+    //
+    drawer: false,
+    group: null,
+  }),
+};
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
