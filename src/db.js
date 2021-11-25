@@ -5,21 +5,24 @@ import 'firebase/storage'
 import 'firebase/firestore'
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDFBXQGms9BhRkKQ8mJbpRJjh_IMXwZqVE",
-    authDomain: "vue-finalfpi.firebaseapp.com",
-    projectId: "vue-finalfpi",
-    storageBucket: "vue-finalfpi.appspot.com",
-    messagingSenderId: "304834743057",
-    appId: "1:304834743057:web:a89b2f25374db7fac39ab0"
-  };
+
+  apiKey: "AIzaSyDFBXQGms9BhRkKQ8mJbpRJjh_IMXwZqVE",
+  authDomain: "vue-finalfpi.firebaseapp.com",
+  projectId: "vue-finalfpi",
+  storageBucket: "vue-finalfpi.appspot.com",
+  messagingSenderId: "304834743057",
+  appId: "1:304834743057:web:a89b2f25374db7fac39ab0"
+
+};
+
 
 const app = firebase.initializeApp(firebaseConfig);
 
 export const storage = app.storage();
 export const db = app.firestore();
 
-const { Timestamp, GeoPoint } = firebase.firestore
-export { Timestamp, GeoPoint }
+/* const { Timestamp, GeoPoint } = firebase.firestore
+export { Timestamp, GeoPoint } */
 
 /* export const db = firebase
     .initializeApp({ projectId: 'vue-finalfpi' })

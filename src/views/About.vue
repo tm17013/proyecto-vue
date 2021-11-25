@@ -14,13 +14,21 @@
                 :key="estado"
               >
                 <v-col>
-                  <v-checkbox
+                  <!-- <v-checkbox
                     color="primary"
                     class="py-0 my-0"
                     v-model="estadoSelect"
                     :label="estado"
                     :value="estado"
-                  ></v-checkbox>
+                  ></v-checkbox> -->
+                  <v-switch
+                    color="primary"
+                    class="py-0 my-0"
+                    v-model="estadoSelect"
+                    :label="estado"
+                    :value="estado"
+                  >
+                  </v-switch>
                 </v-col>
               </div>
             </v-card>
@@ -184,14 +192,22 @@
                         <div class="my-3">
                           <h4>Estado</h4>
                           <div v-for="estado in estados" :key="estado">
-                            <v-checkbox
+                            <!-- <v-checkbox
                               color="primary"
                               class="py-0 my-0"
                               v-model="estadoSelect"
                               :label="estado"
                               :value="estado"
                               hide-details
-                            ></v-checkbox>
+                            ></v-checkbox> -->
+                            <v-switch
+                              color="primary"
+                              class="py-0 my-0"
+                              v-model="estadoSelect"
+                              :label="estado"
+                              :value="estado"
+                            >
+                            </v-switch>
                           </div>
                         </div>
                         <div class="my-3">
@@ -265,12 +281,7 @@
                     class="mx-auto my-3"
                     elevation="8"
                   >
-                    <v-img height="250" :src="
-                       
-                          item.imagenes[0]
-                          
-                      "
-                      >
+                    <v-img height="250" :src="item.imagenes[0]">
                       <template v-slot:placeholder>
                         <v-row
                           class="fill-height ma-0"
@@ -410,7 +421,7 @@ export default {
     };
   },
   firestore: {
-    /* basecard: db.collection("basecard"), */
+    basecard: db.collection("basecard"),
   },
 
   computed: {
@@ -452,7 +463,7 @@ export default {
     comprar(anuncio) {
       this.$root.$emit("Added-to-cart", anuncio);
     },
-    async traerAnuncio() {
+    /* async traerAnuncio() {
       try {
         const snapshot = await db.collection("basecard").get();
         snapshot.forEach((doc) => {
@@ -463,11 +474,11 @@ export default {
       } catch (error) {
         console.log(error);
       }
-    },
+    }, */
   },
-  async created() {
+  /* async created() {
     this.traerAnuncio();
-  },
+  }, */
 };
 </script>
 <style scoped>

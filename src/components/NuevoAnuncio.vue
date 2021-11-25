@@ -17,23 +17,48 @@
               <v-container>
                 <v-row>
                   <v-col cols="12" sm="6">
-                    <v-carousel small>
-                      <v-carousel-item> </v-carousel-item>
-                      <v-carousel-item> </v-carousel-item>
-                      <v-carousel-item> </v-carousel-item>
+                    <v-carousel small v-if="imagenesUrl.length > 0">
+                      <v-carousel-item
+                        v-for="(images, i) in imagenesUrl"
+                        :key="i"
+                        :src="images"
+                        class="text-right"
+                      >
+                        <v-tooltip bottom>
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                              color="red"
+                              @click="eliminarImagen(i)"
+                              class="ma-2"
+                              fab
+                              small
+                              v-bind="attrs"
+                              v-on="on"
+                            >
+                              <v-icon class="white--text"> mdi-delete </v-icon>
+                            </v-btn>
+                          </template>
+                          <span>Eliminar imagen</span>
+                        </v-tooltip>
+                      </v-carousel-item>
                     </v-carousel>
-                    <v-file-input
-                      label="Agregar imagen"
-                      show-size
-                      outlined
-                      dense
-                      counter
-                      chips
-                      
-                      prepend-icon="mdi-camera"
-                      accept="image/*"
-                    ></v-file-input>
-                    <v-btn
+                    <v-form ref="formImg">
+                      <v-file-input
+                        label="Agregar imagen"
+                        show-size
+                        outlined
+                        dense
+                        counter
+                        chips
+                        required
+                        :rules="rules.imagesRules"
+                        accept="image/png, image/jpeg, image/bmp, image/jpg"
+                        prepend-icon="mdi-camera"
+                        v-model="imagen"
+                        @change="agregarImagen()"
+                      ></v-file-input>
+                    </v-form>
+                    <!-- <v-btn
                       style="background-color: purple; margin-right: 20px"
                       dark
                       elevation="2"
@@ -41,7 +66,7 @@
                     >
                     <v-btn style="background-color: purple" dark elevation="2"
                       >Eliminar</v-btn
-                    >
+                    > -->
                   </v-col>
                   <v-col>
                     <v-col cols="12">
@@ -104,7 +129,7 @@
                   <v-col cols="12" sm="6">
                     <v-card elevation="3">
                       <v-col>
-                         <v-select
+                        <v-select
                           label="Estado"
                           placeholder="Nuevo"
                           :items="estados"
@@ -139,7 +164,6 @@
                           label="Pantalla"
                           hint="Pulgadas"
                           persistent-hint
-                          type="number"
                           max="20"
                           min="1"
                           suffix="Pulgadas"
@@ -202,12 +226,16 @@
                       ><v-icon class="mr-2">mdi-delete</v-icon>
                       <span class="hidden-sm-and-down">Cancelar </span>
                     </v-btn>
-                    <v-btn :disabled="!valid" color="green darken-1" text
+
+                    <v-btn
+                      :disabled="!valid"
+                      color="green darken-1"
+                      text
+                      @click="crearAnuncio()"
                       ><v-icon class="mr-2"> mdi-content-save </v-icon>
                       <span class="hidden-sm-and-down">Guardar </span>
                     </v-btn>
                   </v-col>
-                
                 </v-row>
               </v-container>
             </v-form>
@@ -223,10 +251,9 @@
               <span class="hidden-sm-and-down">Cancelar </span>
             </v-btn>
             <v-btn
-              
               color="green darken-1"
               text
-              @click="(dialog = false), (snackbar = true)"
+              @click="(snackbar = true), crearAnuncio()"
               ><v-icon class="mr-2"> mdi-content-save </v-icon>
               <span class="hidden-sm-and-down">Crear Anuncio</span>
             </v-btn>
@@ -246,11 +273,27 @@
 </template>
 
 <script>
+import { db, storage } from "../db";
 export default {
   name: "NuevoAnuncio",
 
   data() {
     return {
+      nuevoAnuncio: {
+        descripcion: "",
+        estado: "",
+        marca: null,
+        modelo: "",
+        pantalla: "",
+        precio: 0,
+        ram: 0,
+        rom: 0,
+        sistema: null,
+        telefono: 0,
+        titulo: "",
+        vendedor: "",
+        imagenes: [],
+      },
       dialog: false,
       valid: true,
       row: null,
@@ -270,6 +313,10 @@ export default {
         marca: "",
         estado: "",
       },
+       nuevoAnuncioId: "",
+      imagenes: [],
+      imagen: null,
+      imagenesUrl: [],
       
       rules: {
         selection: [(v) => !!v || "Este campo es requerido"],
@@ -287,8 +334,10 @@ export default {
           (v) => !!v || "Este campo es requerido",
           (v) => (v && v > 0) || "El tamaño de la pantalla debe ser mayor a 0",
           (v) =>
-            (v && v == 5) || (v && v == 5.5)|| (v && v == 6) || "El tamaño de la pantalla debe ser 5,5.5 o 6",
-            
+            (v && v == "5") ||
+            (v && v == "5.5") ||
+            (v && v == "6") ||
+            "El tamaño de la pantalla debe ser 5,5.5 o 6",
         ],
         color: [
           (v) => !!v || "Este campo es requerido",
@@ -327,11 +376,35 @@ export default {
             "Telefono no debe exceder los 8 caracteres",
           (v) => /\d{8}/.test(v) || "El telefono debe ser de la forma ########",
         ],
+        imagesRules: [
+        (value) =>
+          !value ||
+          value.size < 2000000 ||
+          "Avatar size should be less than 2 MB!",
+      ],
       },
     };
   },
   /* fuera del data, inicio de metodos*/
   methods: {
+    async enviarBase() {
+      try {
+        let r = await db.collection("basecard").add(this.nuevoAnuncio);
+        return r.id;
+      } catch (error) {
+        console.error(error);
+        return null;
+      }
+    },
+    async modificarBase(id) {
+      await db
+        .collection("basecard")
+        .doc(id)
+        .set(this.nuevoAnuncio)
+        .catch((error) => {
+          console.error(error);
+        });
+    },
     selectSistema() {
       if (this.anuncio.marca == "Iphone") {
         this.anuncio.sistema = "Ios";
@@ -351,14 +424,82 @@ export default {
       }
       return result;
     },
-    cancelar() {
+    /* cancelar() {
       this.$refs.form.reset();
       this.dialog = false;
-    },
+    }, */
     limpiar() {
       this.$refs.form.reset();
     },
-  },
+    /* crearanuncio() {
+      this.dialog = false;
+    }, */
 
+    async crearAnuncio() {
+      if (
+        this.$refs.form.validate() &&
+        this.imagenes.length > 0 &&
+        this.imagenes.length < 15
+      ) {
+        var temp = 0;
+        let id = await this.enviarBase();
+        this.imagenes.forEach((imagen) => {
+          var archivo = storage.ref(
+            "/imagenesAnuncios/" + id + "/" + imagen.name
+          );
+          archivo
+            .put(imagen)
+            .then(() => {
+              archivo.getDownloadURL().then((url) => {
+                this.nuevoAnuncio.imagenes.push(url);
+                temp++;
+                if (temp == this.imagenes.length) {
+                  this.modificarBase(id);
+                  this.cancelar();
+                }
+              });
+            })
+            .catch((e) => {
+              console.error(e);
+              this.cancelar();
+            });
+        });
+      } else {
+        console.error("No valido");
+      }
+    },
+    agregarImagen() {
+      if (this.imagen != null) {
+        this.imagenes.push(this.imagen);
+        this.imagenesUrl.push(URL.createObjectURL(this.imagen));
+        this.imagen = null;
+        this.$refs.formImg.reset();
+      }
+    },
+    cancelar() {
+      this.dialog = false;
+      this.nuevoAnuncio.descripcion = "";
+      this.nuevoAnuncio.estado = "";
+      this.nuevoAnuncio.marca = null;
+      this.nuevoAnuncio.modelo = "";
+      this.nuevoAnuncio.pantalla = "";
+      this.nuevoAnuncio.precio = 0;
+      this.nuevoAnuncio.ram = 0;
+      this.nuevoAnuncio.rom = 0;
+      this.nuevoAnuncio.sistema = null;
+      this.nuevoAnuncio.telefono = 0;
+      this.nuevoAnuncio.titulo = "";
+      this.nuevoAnuncio.vendedor = "";
+      this.imagenesUrl = [];
+      this.imagenes = [];
+      this.$refs.form.resetValidation();
+      this.$refs.formImg.resetValidation();
+      this.dialog = false;
+    },
+    eliminarImagen(index) {
+      this.imagenesUrl.splice(index, 1);
+      this.imagenes.splice(index, 1);
+    },
+  },
 };
 </script>
