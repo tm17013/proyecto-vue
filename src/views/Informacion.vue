@@ -6,7 +6,9 @@
           <v-col cols="12" sm="6">
             <v-carousel>
               <v-carousel-item
-               v-for="(img, i) in basecard.imagenes" :key="i" :src="img"
+                v-for="(img, i) in basecard.imagenes"
+                :key="i"
+                :src="img"
               >
               </v-carousel-item>
             </v-carousel>
@@ -14,7 +16,7 @@
           <v-col cols="12" sm="6">
             <v-card elevation="2">
               <v-card-title>Titulo: {{ basecard.titulo }}</v-card-title>
-              <v-card-subtitle>${{ basecard.precio }}</v-card-subtitle>
+              <v-card-text style="font-size:20px">${{ basecard.precio }}</v-card-text>
               <v-card-text>
                 <v-btn color="yellow" dark rounded>Comprar</v-btn>
               </v-card-text>
@@ -44,7 +46,7 @@
               </v-card-text>
             </v-card>
           </v-col>
-          <v-col cols="12" sm="6">
+          <v-col cols="12" sm="6" style="margin-bottom:10px">
             <v-card elevation="2">
               <v-card-title>Descripción</v-card-title>
               <v-card-text>{{ basecard.descripcion }} </v-card-text>
@@ -57,7 +59,6 @@
         >
           <v-spacer></v-spacer>
           <v-col>
-           
             <v-btn color="yellow" dark x-large elevation="11">Inicio</v-btn>
           </v-col>
           <v-col>
@@ -67,6 +68,23 @@
         </v-row>
       </v-row>
     </v-container>
+    <div>
+      <v-card flat tile class="yellow darken-2 white--text text-center">
+        <v-card-text class="white--text pt-0">
+          Elaborado por:
+          <strong> Kenia Stephannie Tepas Mazariego- TM17013</strong>
+        </v-card-text>
+        <strong> Universidad de El Salvador</strong>
+        <v-card-text class="white--text pt-0">
+          Fundamentos de la programación en Internet
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-text class="white--text">
+          {{ new Date().getFullYear() }} —
+          <strong>© All Right Reserved</strong>
+        </v-card-text>
+      </v-card>
+    </div>
   </div>
 </template>
 

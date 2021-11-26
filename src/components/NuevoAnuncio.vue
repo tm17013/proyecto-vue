@@ -17,31 +17,6 @@
               <v-container>
                 <v-row>
                   <v-col cols="12" sm="6">
-                    <v-carousel small v-if="imagenesUrl.length > 0">
-                      <v-carousel-item
-                        v-for="(images, i) in imagenesUrl"
-                        :key="i"
-                        :src="images"
-                        class="text-right"
-                      >
-                        <v-tooltip bottom>
-                          <template v-slot:activator="{ on, attrs }">
-                            <v-btn
-                              color="red"
-                              @click="eliminarImagen(i)"
-                              class="ma-2"
-                              fab
-                              small
-                              v-bind="attrs"
-                              v-on="on"
-                            >
-                              <v-icon class="white--text"> mdi-delete </v-icon>
-                            </v-btn>
-                          </template>
-                          <span>Eliminar imagen</span>
-                        </v-tooltip>
-                      </v-carousel-item>
-                    </v-carousel>
                     <v-form ref="formImg">
                       <v-file-input
                         label="Agregar imagen"
@@ -58,6 +33,35 @@
                         @change="agregarImagen()"
                       ></v-file-input>
                     </v-form>
+                    <div>
+                      <v-carousel small v-if="imagenesUrl.length > 0">
+                        <v-carousel-item
+                          v-for="(images, i) in imagenesUrl"
+                          :key="i"
+                          :src="images"
+                          class="text-right"
+                        >
+                          <v-tooltip bottom>
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-btn
+                                color="red"
+                                @click="eliminarImagen(i)"
+                                class="ma-2"
+                                fab
+                                small
+                                v-bind="attrs"
+                                v-on="on"
+                              >
+                                <v-icon class="white--text">
+                                  mdi-delete
+                                </v-icon>
+                              </v-btn>
+                            </template>
+                            <span>Eliminar imagen</span>
+                          </v-tooltip>
+                        </v-carousel-item>
+                      </v-carousel>
+                    </div>
                     <!-- <v-btn
                       style="background-color: purple; margin-right: 20px"
                       dark
@@ -74,7 +78,7 @@
                         label="Titulo"
                         required
                         :rules="rules.titulo"
-                        v-model="anuncio.titulo"
+                        v-model="nuevoAnuncio.titulo"
                         :counter="maxTitulo"
                       ></v-text-field>
                     </v-col>
@@ -82,14 +86,15 @@
                       <v-text-field
                         label="Precio"
                         required
+                        prefix="$"
                         type="number"
                         hint=""
                         :rules="rules.precio"
-                        v-model="anuncio.precio"
+                        v-model="nuevoAnuncio.precio"
                       ></v-text-field>
                     </v-col>
                     <v-row>
-                      <v-col cols="4" sm="12">
+                      <v-col cols="6" sm="12">
                         <v-text-field
                           label="Vendedor"
                           hint="Nombre y  apellido"
@@ -97,10 +102,10 @@
                           required
                           :counter="maxvendedor"
                           :rules="rules.vendedor"
-                          v-model="anuncio.vendedor"
+                          v-model="nuevoAnuncio.vendedor"
                         ></v-text-field>
                       </v-col>
-                      <v-col cols="4" sm="12">
+                      <v-col cols="6" sm="12">
                         <v-text-field
                           label="Telefono"
                           hint="Numero como 22347890"
@@ -109,10 +114,10 @@
                           prefix="+503"
                           :counter="maxTel"
                           :rules="rules.telefono"
-                          v-model="anuncio.telefono"
+                          v-model="nuevoAnuncio.telefono"
                         ></v-text-field>
                       </v-col>
-                      <v-col cols="4" sm="12">
+                      <v-col cols="12" sm="12">
                         <v-text-field
                           label="Color"
                           hint="Colocar color del telefono"
@@ -120,7 +125,7 @@
                           required
                           :counter="maxcolor"
                           :rules="rules.color"
-                          v-model="anuncio.color"
+                          v-model="nuevoAnuncio.color"
                         ></v-text-field>
                       </v-col>
                     </v-row>
@@ -134,7 +139,8 @@
                           placeholder="Nuevo"
                           :items="estados"
                           required
-                          v-model="anuncio.estado"
+                          :rules="rules.selection"
+                          v-model="nuevoAnuncio.estado"
                         ></v-select>
                       </v-col>
                       <v-col>
@@ -145,7 +151,7 @@
                           required
                           v-on:change="selectSistema()"
                           :rules="rules.selection"
-                          v-model="anuncio.marca"
+                          v-model="nuevoAnuncio.marca"
                         ></v-select>
                       </v-col>
                       <v-col>
@@ -155,7 +161,7 @@
                           required
                           :counter="maxModel"
                           :rules="rules.modelo"
-                          v-model="anuncio.modelo"
+                          v-model="nuevoAnuncio.modelo"
                         ></v-text-field>
                       </v-col>
                       <v-col>
@@ -169,7 +175,7 @@
                           suffix="Pulgadas"
                           required
                           :rules="rules.pantalla"
-                          v-model="anuncio.pantalla"
+                          v-model="nuevoAnuncio.pantalla"
                         ></v-text-field>
                       </v-col>
                       <v-col>
@@ -179,31 +185,33 @@
                           :items="sistemas"
                           required
                           :rules="rules.selection"
-                          v-model="anuncio.sistema"
+                          v-model="nuevoAnuncio.sistema"
                         ></v-select>
                       </v-col>
                       <v-col>
                         <v-text-field
-                          placeholder="64 GB"
+                          placeholder="64"
                           label="ROM"
+                          type="number"
                           required
                           max="128"
                           min="1"
                           suffix="GB"
                           :rules="rules.rom"
-                          v-model="anuncio.rom"
+                          v-model="nuevoAnuncio.rom"
                         ></v-text-field>
                       </v-col>
                       <v-col>
                         <v-text-field
-                          placeholder="64 GB"
+                          placeholder="64"
                           label="RAM"
+                          type="number"
                           required
                           max="128"
                           min="1"
                           suffix="GB"
                           :rules="rules.ram"
-                          v-model="anuncio.ram"
+                          v-model="nuevoAnuncio.ram"
                         ></v-text-field>
                       </v-col>
                     </v-card>
@@ -214,8 +222,8 @@
                       <v-textarea
                         label="Escribir... "
                         :counter="maxdes"
-                        :rules="rules.des"
-                        v-model="anuncio.des"
+                        :rules="rules.descripcion"
+                        v-model="nuevoAnuncio.descripcion"
                       ></v-textarea>
                     </v-card>
                     <v-btn color="secundary" dark @click="limpiar()"
@@ -254,6 +262,7 @@
               color="green darken-1"
               text
               @click="(snackbar = true), crearAnuncio()"
+              :disabled="!valid"
               ><v-icon class="mr-2"> mdi-content-save </v-icon>
               <span class="hidden-sm-and-down">Crear Anuncio</span>
             </v-btn>
@@ -273,10 +282,10 @@
 </template>
 
 <script>
-import { db, storage } from "../db";
+import { db, st } from "../db";
 export default {
   name: "NuevoAnuncio",
-
+  props: ["desktop"],
   data() {
     return {
       nuevoAnuncio: {
@@ -293,6 +302,7 @@ export default {
         titulo: "",
         vendedor: "",
         imagenes: [],
+        color: "",
       },
       dialog: false,
       valid: true,
@@ -308,16 +318,16 @@ export default {
       maxModel: 10,
       maxcolor: 10,
       maxTel: 8,
-      anuncio: {
+      /* anuncio: {
         sistema: "",
         marca: "",
         estado: "",
-      },
-       nuevoAnuncioId: "",
+      }, */
+      nuevoAnuncioId: "",
       imagenes: [],
       imagen: null,
       imagenesUrl: [],
-      
+
       rules: {
         selection: [(v) => !!v || "Este campo es requerido"],
         titulo: [
@@ -353,7 +363,7 @@ export default {
           (v) => (v && v > 0) || "La memoria R0M debe ser mayor a 0",
           (v) => (v && v <= 128) || "La memoria R0M debe ser menor a 128 GB",
         ],
-        des: [
+        descripcion: [
           (v) => !!v || "Este campo es requerido",
           (v) =>
             (v && v.length <= this.maxdes) ||
@@ -377,11 +387,12 @@ export default {
           (v) => /\d{8}/.test(v) || "El telefono debe ser de la forma ########",
         ],
         imagesRules: [
-        (value) =>
-          !value ||
-          value.size < 2000000 ||
-          "Avatar size should be less than 2 MB!",
-      ],
+          (value) =>
+            !value ||
+            value.size < 2000000 ||
+            "La imagen debe pesar menos de 2 MB!",
+            
+        ],
       },
     };
   },
@@ -406,10 +417,10 @@ export default {
         });
     },
     selectSistema() {
-      if (this.anuncio.marca == "Iphone") {
-        this.anuncio.sistema = "Ios";
+      if (this.nuevoAnuncio.marca == "Iphone") {
+        this.nuevoAnuncio.sistema = "Ios";
       } else {
-        this.anuncio.sistema = "Android";
+        this.nuevoAnuncio.sistema = "Android";
       }
     },
     makeid(length) {
@@ -429,7 +440,11 @@ export default {
       this.dialog = false;
     }, */
     limpiar() {
+      this.imagenesUrl = [];
+      this.imagenes = [];
       this.$refs.form.reset();
+      this.$refs.form.resetValidation();
+      this.$refs.formImg.resetValidation();
     },
     /* crearanuncio() {
       this.dialog = false;
@@ -444,9 +459,7 @@ export default {
         var temp = 0;
         let id = await this.enviarBase();
         this.imagenes.forEach((imagen) => {
-          var archivo = storage.ref(
-            "/imagenesAnuncios/" + id + "/" + imagen.name
-          );
+          var archivo = st.ref("/imagenesAnuncios/" + id + "/" + imagen.name);
           archivo
             .put(imagen)
             .then(() => {
@@ -478,6 +491,7 @@ export default {
     },
     cancelar() {
       this.dialog = false;
+      /* this.$refs.form.reset(); */
       this.nuevoAnuncio.descripcion = "";
       this.nuevoAnuncio.estado = "";
       this.nuevoAnuncio.marca = null;

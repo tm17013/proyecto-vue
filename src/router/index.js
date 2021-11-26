@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Informacion from '../views/Informacion.vue'
 import About from '../views/About.vue'
 import carrito from '../views/carrito.vue'
+import estadisticas from '../views/estadisticas.vue'
 
 Vue.use(VueRouter)
 
@@ -21,6 +22,11 @@ const routes = [
     path: '/carrito',
     name: 'carrito',
     component: carrito
+  },
+  {
+    path: '/estadisticas',
+    name: 'estadisticas',
+    component: estadisticas
   }
 
 ]

@@ -14,15 +14,8 @@
                 :key="estado"
               >
                 <v-col>
-                  <!-- <v-checkbox
-                    color="primary"
-                    class="py-0 my-0"
-                    v-model="estadoSelect"
-                    :label="estado"
-                    :value="estado"
-                  ></v-checkbox> -->
                   <v-switch
-                    color="primary"
+                    color="indigo"
                     class="py-0 my-0"
                     v-model="estadoSelect"
                     :label="estado"
@@ -104,7 +97,9 @@
             :items="basecardFiltrado"
             :search="busqueda"
             :sort-by="sortBy"
-            :items-per-page="8"
+            :items-per-page.sync="itemsPerPage"
+            hide-default-footer
+            :page.sync="page"
             :sort-desc="sortDesc"
           >
             <template v-slot:header>
@@ -117,6 +112,7 @@
                   hide-details
                   prepend-inner-icon="mdi-magnify"
                   label="Buscar"
+                  color="yellow darken-2"
                 ></v-text-field>
                 <template v-if="$vuetify.breakpoint.mdAndUp">
                   <v-spacer></v-spacer>
@@ -130,14 +126,15 @@
                     item-value="param"
                     prepend-inner-icon="mdi-magnify"
                     label="Ordenar por"
+                    color="yellow darken-2"
                   ></v-select>
                   <v-spacer></v-spacer>
                   <v-btn-toggle v-model="sortDesc" mandatory>
                     <v-btn large depressed :value="false">
-                      <v-icon>mdi-arrow-up</v-icon>
+                      <v-icon color="yellow darken-2">mdi-arrow-up</v-icon>
                     </v-btn>
                     <v-btn large depressed :value="true">
-                      <v-icon>mdi-arrow-down</v-icon>
+                      <v-icon color="yellow darken-2">mdi-arrow-down</v-icon>
                     </v-btn>
                   </v-btn-toggle>
                 </template>
@@ -146,6 +143,7 @@
               <v-col cols="12" class="d-flex d-sm-none">
                 <v-col cols="10">
                   <v-select
+                  color="yellow darken-2"
                     v-model="sortBy"
                     filled
                     rounded
@@ -163,9 +161,10 @@
                     <template v-slot:activator="{ on }">
                       <v-btn
                         v-on="on"
-                        color="primary"
+                        color="purple"
                         @click="filterDialog = true"
                         class="esquina hidden-md-and-up"
+                        dark
                       >
                         <v-icon>mdi-filter</v-icon>
                       </v-btn>
@@ -181,7 +180,7 @@
                             align-center
                             w-100
                           "
-                          color="yellow"
+                          color="yellow darken-2"
                           dark
                         >
                           <h2>Filtrar</h2>
@@ -192,16 +191,8 @@
                         <div class="my-3">
                           <h4>Estado</h4>
                           <div v-for="estado in estados" :key="estado">
-                            <!-- <v-checkbox
-                              color="primary"
-                              class="py-0 my-0"
-                              v-model="estadoSelect"
-                              :label="estado"
-                              :value="estado"
-                              hide-details
-                            ></v-checkbox> -->
                             <v-switch
-                              color="primary"
+                              color="indigo"
                               class="py-0 my-0"
                               v-model="estadoSelect"
                               :label="estado"
@@ -256,7 +247,7 @@
                       <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn
-                          color="primary"
+                          color="yellow darken-4"
                           text
                           @click="filterDialog = false"
                         >
@@ -296,7 +287,10 @@
                       </template>
                     </v-img>
 
-                    <v-card-title class="pt-3 pb-0">
+                    <v-card-title
+                      class="pt-3 pb-0 center-text"
+                      style="font-size: 14px"
+                    >
                       <div v-if="item.titulo.length < 20">
                         {{ item.titulo }}
                       </div>
@@ -311,32 +305,27 @@
                       >
 
                       <div>
-                        <div v-if="item.estado.length < 50">
-                          {{ item.estado }}
-                        </div>
-                        <div v-else>
-                          {{ item.estado.substring(0, 50) + "..." }}
-                        </div>
+                        {{ item.estado }}
                       </div>
                     </v-card-text>
 
                     <v-divider class="mx-4"></v-divider>
                     <v-card-text>
                       <v-row align="center" class="spacer" no-gutters>
-                        <v-col cols="1">
+                        <v-col cols="1" color="purple">
                           <v-icon> mdi-account</v-icon>
                         </v-col>
-
                         <v-col cols="3" md>
-                          <strong class="mx-3" v-html="item.vendedor"></strong>
+                          <strong class="mx-3">{{ item.vendedor }}</strong>
                         </v-col>
                       </v-row>
                     </v-card-text>
                     <v-divider class="mx-4"></v-divider>
 
                     <v-card-text>
+                      Click en los chips para filtrar
                       <v-chip-group
-                        active-class="deep-purple accent-4 white--text"
+                        active-class="deep-purple justify-center accent-4 white--text"
                         column
                       >
                         <v-chip @click="filtrarPor(item.marca)">{{
@@ -360,13 +349,14 @@
                       <router-link
                         :to="{ name: 'Informacion', params: { id: item.id } }"
                       >
-                        <v-btn color="primary" class="action-button">
+                        <v-btn small dark color="purple" class="action-button">
                           <v-icon>mdi-magnify</v-icon>
                           Detalles
                         </v-btn>
                       </router-link>
                       <v-btn
                         black
+                        small
                         color="yellow"
                         class="black--text action-button"
                       >
@@ -378,12 +368,71 @@
                 </v-col>
               </v-row>
             </template>
+
+            <template v-slot:footer>
+              <v-row
+                class="mt-2"
+                align="center"
+                justify="center"
+                style="margin-bottom: 10px"
+              >
+                <span class="mr-4 grey--text">
+                  Página {{ page }} de {{ numberOfPages }}
+                </span>
+                <v-btn fab dark color="yellow" class="mr-1" @click="formerPage">
+                  <v-icon>mdi-chevron-left</v-icon>
+                </v-btn>
+                <v-btn fab dark color="yellow" class="ml-1" @click="nextPage">
+                  <v-icon>mdi-chevron-right</v-icon>
+                </v-btn>
+                <v-spacer></v-spacer>
+                <span class="grey--text">Items por página</span>
+                <v-menu offset-y>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      dark
+                      text
+                      color="yellow darken-4"
+                      class="ml-2"
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      {{ itemsPerPage }}
+                      <v-icon>mdi-chevron-down</v-icon>
+                    </v-btn>
+                  </template>
+                  <v-list >
+                    <v-list-item 
+                      v-for="(number, index) in itemsPerPageArray"
+                      :key="index"
+                      @click="updateItemsPerPage(number)"
+                    >
+                      <v-list-item-title>{{ number }}</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </v-row>
+            </template>
           </v-data-iterator>
-          <div>
-            <p>Elaborado por: Kenia Stephannie Tepas Mazariego-TM17013</p>
-          </div>
         </v-col>
       </v-row>
+      <div>
+        <v-card flat tile class="yellow darken-2 white--text text-center">
+          <v-card-text class="white--text pt-0">
+            Elaborado por:
+            <strong> Kenia Stephannie Tepas Mazariego- TM17013</strong>
+          </v-card-text>
+          <strong> Universidad de El Salvador</strong>
+          <v-card-text class="white--text pt-0">
+            Fundamentos de la programación en Internet
+          </v-card-text>
+          <v-divider></v-divider>
+          <v-card-text class="white--text">
+            {{ new Date().getFullYear() }} —
+            <strong>© All Right Reserved</strong>
+          </v-card-text>
+        </v-card>
+      </div>
     </v-container>
   </div>
 </template>
@@ -395,6 +444,10 @@ export default {
 
   data() {
     return {
+      page: 1,
+      itemsPerPage: 8,
+      itemsPerPageArray: [4, 8, 12, 14, 18, 20],
+
       loading: true,
       backgroundImg: null,
       sortBy: [],
@@ -425,6 +478,9 @@ export default {
   },
 
   computed: {
+    numberOfPages() {
+      return Math.ceil(this.basecard.length / this.itemsPerPage);
+    },
     marcasFiltrado() {
       if (this.marcaSelect.length) return this.marcaSelect;
       else return this.marcas;
@@ -453,6 +509,15 @@ export default {
     },
   },
   methods: {
+    nextPage() {
+      if (this.page + 1 <= this.numberOfPages) this.page += 1;
+    },
+    formerPage() {
+      if (this.page - 1 >= 1) this.page -= 1;
+    },
+    updateItemsPerPage(number) {
+      this.itemsPerPage = number;
+    },
     getRandomInt(min, max) {
       return Math.floor(Math.random() * (max - min)) + min;
     },
@@ -460,9 +525,9 @@ export default {
       if (this.busqueda == param) this.busqueda = "";
       else this.busqueda = param;
     },
-    comprar(anuncio) {
+    /* comprar(anuncio) {
       this.$root.$emit("Added-to-cart", anuncio);
-    },
+    }, */
     /* async traerAnuncio() {
       try {
         const snapshot = await db.collection("basecard").get();
